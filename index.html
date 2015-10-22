@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>萌图</title>
+	<style type="text/css">
+		* {
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+		/* force scrollbar */
+
+		html {
+			overflow-y: scroll;
+		}
+
+		body {
+			font-family: sans-serif;
+		}
+		/* ---- isotope ---- */
+
+		.grid {
+			background: #DDD;
+			max-width: 1200px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		/* clear fix */
+
+		.grid:after {
+			content: '';
+			display: block;
+			clear: both;
+		}
+		/* ---- .grid-item ---- */
+
+		.grid-sizer,
+		.grid-item {
+			width: 33.333%;
+		}
+
+		.grid-item {
+			min-height: 100px;
+			min-width: 100px;
+			float: left;
+			display: block;
+			background-position: center center;
+			background-repeat: no-repeat;
+		}
+
+		.grid-item img {
+			display: block;
+			max-width: 100%;
+			-webkit-transition: opacity 0.4s;
+			-moz-transition: opacity 0.4s;
+			-ms-transition: opacity 0.4s;
+			transition: opacity 0.4s;
+		}
+
+		.grid-item.is-loading {
+			background-color: black;
+			background-image: url('http://desandro.github.io/imagesloaded/assets/loading.gif');
+		}
+
+		.grid-item.is-broken {
+			background-image: url('http://desandro.github.io/imagesloaded/assets/broken.png');
+			background-color: #be3730;
+			width: 120px;
+		}
+
+		.grid-item.is-loading img,
+		.grid-item.is-broken img {
+			opacity: 0;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="grid-area" class="grid">
+		<div class="grid-sizer"></div>
+	</div>
+
+	<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+	<script src="https://cdn.bootcss.com/masonry/3.3.2/masonry.pkgd.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery.imagesloaded/3.1.8/imagesloaded.pkgd.min.js"></script>
+	<script type="text/javascript">
+		AV.initialize('Ak7JOmWYzJQaIi4LAHPY8Mrf', 'rVV847jNL0fRbAx0gNaJEV5c');
+
+		var Media = AV.Object.extend("Media");
+		var query = new AV.Query(Media);
+		query.limit(10);
+		query.descending("updatedAt");
+		query.find({
+			success: function(results) {
+				var fragment = document.createDocumentFragment();
+				var grid = document.getElementById('grid-area');
+
+				results.sort(function(a, b) {
+					return Math.random() > .5 ? -1 : 1;
+				});
+
+				for (var i = 0; i < results.length; i++) {
+					var object = results[i];
+					var size = (object.get('type') !== 'gif') ? '/sz/400' : '';
+					var img = document.createElement('img');
+					img.src = 'http://tbfile.ixiaochuan.cn/img/view/id/' + object.get('mid') + size;
+					var item = document.createElement('div');
+					item.className = 'grid-item is-loading';
+					item.appendChild(img);
+					fragment.appendChild(item);
+					// grid.appendChild(item);
+				};
+
+				grid.appendChild(fragment);
+
+				var msnry = new Masonry(grid, {
+					itemSelector: '.grid-item',
+					columnWidth: '.grid-sizer',
+					percentPosition: true
+				});
+
+				var imgLoad = imagesLoaded(grid);
+				imgLoad.on('always', function(imgLoad) {
+					msnry.layout();
+				});
+				imgLoad.on('progress', function(imgLoad, image) {
+					image.img.parentNode.className = image.isLoaded ? 'grid-item' : 'grid-item is-broken';
+					msnry.layout();
+				});
+
+			}
+		});
+	</script>
+</body>
+
+</html>
