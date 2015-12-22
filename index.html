@@ -90,7 +90,7 @@
 
 		var Media = AV.Object.extend("Media");
 		var query = new AV.Query(Media);
-		query.skip(Math.round(Math.random() * 5000));
+		query.skip(Math.round(Math.random() * 8400));
 		query.limit(15);
 		query.descending("updatedAt");
 		query.find({
